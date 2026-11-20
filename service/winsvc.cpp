@@ -18,6 +18,8 @@
 
 #include <chrono>
 #include <cstdio>
+#include <future>
+#include <map>
 #include <ctime>
 
 extern "C" {
@@ -87,10 +89,10 @@ int AclConnected(uint64_t addr)
     return info.fConnected ? 1 : 0;
 }
 
-void Worker()
+void ServeDevice(const SessionOptions &options, bool discovered)
 {
     using Clock = std::chrono::steady_clock;
-    uint64_t addr = ParseAddress(g_opts.address);
+    uint64_t addr = ParseAddress(options.address);
     auto nextAttempt = Clock::now();
     int backoff = 0;  // seconds before our next own CONNECT
     bool present = false;
@@ -107,6 +109,8 @@ void Worker()
         if (!sinkBusy)
             sawIdle = true;  // includes the device going away (driver restart, unpaired)
         int acl = AclConnected(addr);
+        if (discovered && (acl == 0 || st < 0))
+            return;
         if (acl != lastAcl) {
             if (acl == 1 && lastAcl == 0) {
                 Stamp("headphones connected");
@@ -133,7 +137,7 @@ void Worker()
         Stamp(sinkBusy ? "session (stream set up by the driver or the headphones)" : "session (connecting)");
         std::string err;
         auto started = Clock::now();
-        SessionEnd end = RunSession(g_opts, g_stop, err);
+        SessionEnd end = RunSession(options, g_stop, err);
         if (g_stop)
             break;
         if (end == SessionEnd::Error)
@@ -148,6 +152,48 @@ void Worker()
         if (backoff)
             printf("next connect attempt in %d s if the headphones stay connected\n", backoff);
     }
+}
+
+void Worker()
+{
+    if (!g_opts.address.empty()) {
+        ServeDevice(g_opts, false);
+        return;
+    }
+
+    // Windows routes each application's PCM to its chosen endpoint. Give every
+    // connected LdacA2dp endpoint its own encoder and leave inbox endpoints alone.
+    std::map<uint64_t, std::future<void>> sessions;
+    while (!g_stop) {
+        for (auto it = sessions.begin(); it != sessions.end(); ) {
+            if (it->second.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                it->second.get();
+                it = sessions.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
+        BLUETOOTH_DEVICE_SEARCH_PARAMS search = {};
+        search.dwSize = sizeof(search);
+        search.fReturnConnected = TRUE;
+        BLUETOOTH_DEVICE_INFO device = {};
+        device.dwSize = sizeof(device);
+        HBLUETOOTH_DEVICE_FIND find = BluetoothFindFirstDevice(&search, &device);
+        if (find) {
+            do {
+                const uint64_t address = device.Address.ullLong;
+                if (sessions.count(address) || DriverLinkState(address) < 0)
+                    continue;
+                SessionOptions options = g_opts;
+                options.address = FormatAddress(address);
+                sessions.emplace(address, std::async(std::launch::async, ServeDevice, options, true));
+            } while (!g_stop && BluetoothFindNextDevice(find, &device));
+            BluetoothFindDeviceClose(find);
+        }
+        WaitForSingleObject(g_stopEvent, 1000);
+    }
+    // The async futures join here after all sessions observe g_stop.
 }
 
 void WINAPI ServiceMain(DWORD, LPWSTR *)

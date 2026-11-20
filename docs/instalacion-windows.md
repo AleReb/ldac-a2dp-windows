@@ -1,5 +1,9 @@
 # Instalar LDAC A2DP en Windows
 
+## Varios auriculares
+
+La versión actual del repositorio abre una sesión por cada auricular conectado que utilice el controlador. Cada uno conserva su códec y calidad. El panel selecciona el que acabas de conectar y Windows controla por dónde se reproduce el audio. Para actualizar una instalación anterior, [compila el paquete actual](../README.md#building) y ejecuta su **install.cmd**. El ZIP de **sony.1** enlazado más abajo es anterior a la detección automática.
+
 Esta edición incluye un panel en inglés y los identificadores Bluetooth de los Sony WH-1000XM2 y JBL Live 780NC. En el equipo de desarrollo se verificó transmisión LDAC HQ a 990 kbps y reconexión con los Sony, un adaptador Realtek y Windows 11 Pro 26H2 x64. El proyecto original documenta sus pruebas con los JBL. La tasa alcanzada depende del enlace.
 
 ## Antes de instalar

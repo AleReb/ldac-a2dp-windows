@@ -16,6 +16,8 @@ public sealed class MainViewModel : Observable
     private string _message = "";
     private bool _loading = true;
     private readonly DispatcherTimer _statusTimer;
+    private readonly DispatcherTimer _deviceTimer;
+    private bool _refreshing;
 
     public ObservableCollection<BtAudioDevice> Devices { get; } = new();
 
@@ -26,6 +28,15 @@ public sealed class MainViewModel : Observable
         _statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _statusTimer.Tick += (_, _) => RaiseStatus();
         _statusTimer.Start();
+        _deviceTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+        _deviceTimer.Tick += async (_, _) => await RefreshDevicesAsync();
+        _deviceTimer.Start();
+    }
+
+    public void StopMonitoring()
+    {
+        _deviceTimer.Stop();
+        _statusTimer.Stop();
     }
 
     public BtAudioDevice? Selected
@@ -117,30 +128,53 @@ public sealed class MainViewModel : Observable
 
     public async Task RefreshDevicesAsync()
     {
-        Loading = true;
-        var keep = _selected?.Address;
+        if (_refreshing)
+            return;
+        _refreshing = true;
         try
         {
             var found = await BluetoothAudioDevices.FindPairedAsync();
-            foreach (var d in Devices)
-                d.Settings.PropertyChanged -= OnSettingsChanged;
-            Devices.Clear();
+            var previous = Selected;
+            bool wasConnected = previous?.Connected == true;
+            var page = Page;
+            BtAudioDevice? newlyConnected = null;
+            var seen = new HashSet<ulong>();
             foreach (var (name, address, connected) in found)
             {
-                var dev = new BtAudioDevice
+                seen.Add(address);
+                var dev = Devices.FirstOrDefault(d => d.Address == address);
+                if (dev is null)
                 {
-                    Name = name,
-                    Address = address,
-                    Connected = connected,
-                    Settings = SettingsStore.For(BtAudioDevice.FormatAddress(address)),
-                };
-                dev.Settings.PropertyChanged += OnSettingsChanged;
-                Devices.Add(dev);
+                    dev = new BtAudioDevice
+                    {
+                        Name = name,
+                        Address = address,
+                        Settings = SettingsStore.For(BtAudioDevice.FormatAddress(address)),
+                    };
+                    dev.Settings.PropertyChanged += OnSettingsChanged;
+                    Devices.Add(dev);
+                }
+                if (connected && !dev.Connected)
+                    newlyConnected ??= dev;
+                dev.Connected = connected;
             }
-            Selected = Devices.FirstOrDefault(d => d.Address == keep) ?? Devices.FirstOrDefault(d =>
-                SettingsStore.ReadStatus(d.AddressText) is { } status &&
-                DateTime.UtcNow - status.Written < TimeSpan.FromSeconds(5))
-                ?? Devices.FirstOrDefault(d => d.Connected) ?? Devices.FirstOrDefault();
+            foreach (var removed in Devices.Where(d => !seen.Contains(d.Address)).ToArray())
+            {
+                removed.Settings.PropertyChanged -= OnSettingsChanged;
+                Devices.Remove(removed);
+            }
+
+            if (previous is null || !seen.Contains(previous.Address))
+                Selected = Devices.FirstOrDefault(d => d.Connected &&
+                    SettingsStore.ReadStatus(d.AddressText) is { } status &&
+                    DateTime.UtcNow - status.Written < TimeSpan.FromSeconds(5))
+                    ?? Devices.FirstOrDefault(d => d.Connected) ?? Devices.FirstOrDefault();
+            else if (newlyConnected is not null)
+                Selected = newlyConnected;
+            else if (wasConnected && !previous.Connected)
+                Selected = Devices.FirstOrDefault(d => d.Connected) ?? previous;
+
+            Page = page;
         }
         catch (Exception ex)
         {
@@ -148,6 +182,7 @@ public sealed class MainViewModel : Observable
         }
         finally
         {
+            _refreshing = false;
             Loading = false;
         }
     }

@@ -87,15 +87,7 @@ if ($addresses.Count -eq 0) {
 
 # ---- 5. service ---------------------------------------------------------------------------------
 Step 'Registering the LdacSvc service'
-$svcArgs = @('install')
-if ($addresses.Count -eq 1) {
-    $mac = ($addresses[0] -split '(..)' | Where-Object { $_ }) -join ':'
-    $svcArgs += @('--address', $mac)
-    Write-Host "Headphones: $mac"
-} elseif ($addresses.Count -gt 1) {
-    Write-Warning "Several headphones use the driver ($($addresses -join ', ')); the service serves the first one it finds."
-}
-& (Join-Path $dst 'ldacsvc.exe') @svcArgs
+& (Join-Path $dst 'ldacsvc.exe') install
 if ($LASTEXITCODE -ne 0) { throw "ldacsvc install failed ($LASTEXITCODE)" }
 
 # ---- 6. shortcut and Installed apps entry -------------------------------------------------------

@@ -1,5 +1,9 @@
 # Windows installation
 
+## Using several headsets
+
+The current source opens a session for each connected headset using the driver. Each headset keeps its codec and quality settings. The panel selects newly connected headphones, and Windows controls the playback output. To upgrade an existing installation, [build the current package](../README.md#building) and run its **install.cmd**. The **sony.1** ZIP linked below predates automatic detection.
+
 **Requirements:** Windows 11 x64 22H2 or later, classic Bluetooth A2DP, administrator access and a supported headset. This fork was tested with Sony WH-1000XM2 and a Realtek adapter on Windows 11 Pro 26H2. The upstream project also supports JBL Live 780NC. The release bundles the encoder and settings app. Build tools are only needed for source builds.
 
 1. Download **LdacA2dp-Windows-x64.zip** under **Assets** on the [fork release](https://github.com/AleReb/ldac-a2dp-windows/releases/tag/v0.2.324.1927-sony.1). Compare `Get-FileHash .\LdacA2dp-Windows-x64.zip -Algorithm SHA256` with **SHA256SUMS.txt**. Extract the entire archive.

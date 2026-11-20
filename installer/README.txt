@@ -2,14 +2,16 @@ LDAC A2DP
 
 This package provides the LdacA2dp Bluetooth audio and remote control driver,
 the LdacSvc audio encoder and the LDAC A2DP settings app.
-Supported models in this build: JBL Live 780NC and Sony WH-1000XM2.
+The service detects each connected headset using the LdacA2dp driver.
+The driver includes hardware IDs for JBL Live 780NC and Sony WH-1000XM2.
 Requires Windows 11 22H2 or later (x64).
 
 Installation
 1. Pair the headphones in Windows Settings > Bluetooth & devices.
 2. Run install.cmd and accept the administrator prompt.
 3. Select Headphones (your device name) as the Windows audio output.
-   Open LDAC A2DP from the Start menu.
+   Open LDAC A2DP from the Start menu. The panel follows newly connected
+   headsets. Codec and quality settings are saved separately for each one.
 
 This build uses a test certificate. Windows requires test signing to load it.
 Enabling test signing requires Secure Boot to be off. To enable test signing,

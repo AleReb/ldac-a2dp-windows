@@ -16,6 +16,7 @@ public partial class MainWindow : Window
         Height = Math.Min(Height, area.Height - 40);
         MinWidth = Math.Min(MinWidth, Width);
         MinHeight = Math.Min(MinHeight, Height);
+        Closed += (_, _) => _vm.StopMonitoring();
         Loaded += async (_, _) => await _vm.RefreshDevicesAsync();
     }
 

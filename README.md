@@ -1,10 +1,14 @@
 # LDAC A2DP for Windows
 
-## Sony WH-1000XM2 fork · Windows x64
+## Automatic headset detection on Windows x64
 
-[Download the test-signed installer](https://github.com/AleReb/ldac-a2dp-windows/releases/tag/v0.2.324.1927-sony.1) · [Instalación en español](docs/instalacion-windows.md) · [English installation guide](docs/windows-install.md)
+[Earlier test-signed installer (sony.1)](https://github.com/AleReb/ldac-a2dp-windows/releases/tag/v0.2.324.1927-sony.1) · [Instalación en español](docs/instalacion-windows.md) · [English installation guide](docs/windows-install.md)
 
-This fork adds hardware IDs for the Sony WH-1000XM2, an English settings panel, active-headset selection at startup and a working audio-session reconnect button. LDAC HQ at 990 kbps and reconnection were verified on one Windows 11 Pro 26H2 x64 PC with a Realtek Bluetooth adapter. Other PCs and radio conditions can produce different results. The installer requires test signing. See the guide before changing boot settings.
+Connect a supported Bluetooth headset and the encoder starts a session using that headset’s saved codec and quality settings. If several supported headsets are connected, the service manages each separately. The settings panel follows newly connected headphones within a few seconds. Choose the playback output in Windows.
+
+**Hardware compatibility.** Sony WH-1000XM2 playback was verified at LDAC HQ, 96 kHz and 990 kbps. The upstream project tested JBL Live 780NC. Windows also associated soundcore P31i with this driver on the development PC. Other headsets need a matching Bluetooth hardware ID and support for the selected codec.
+
+**Installing this version.** Build the installer from this branch using the commands under [Building](#building). Running the new package’s `install.cmd` upgrades an existing installation and enables automatic detection. The linked `sony.1` download predates this feature.
 
 The original project and its development notes follow below.
 
@@ -78,7 +82,7 @@ Apache License 2.0 (see `LICENSE`). Third-party code: libldac (AOSP, Apache 2.0)
 |---|---|
 | `avdtp/` | Ядро протоколов на C без кучи и CRT: кадры AVDTP, фрагментация, возможности, LDAC/SBC, автомат источника, медиапакеты; AVRCP/AVCTP (`avrcp.c`). Те же исходники собираются в KMDF-драйвер. |
 | `avdtp/tests/` | Юнит-тесты, симулятор наушников (`sim_sink`, повторяет JBL Live 780NC) и повтор реальной сессии (`test_replay`). |
-| `driver/LdacA2dp/` | KMDF-драйвер наушников: A2DP (L2CAP через BRB, ядро AVDTP, звуковое устройство ACX, IOCTL для службы кодирования) и AVRCP (громкость, кнопки через VHF). INF для JBL Live 780NC. |
+| `driver/LdacA2dp/` | KMDF-драйвер наушников: A2DP (L2CAP через BRB, ядро AVDTP, звуковое устройство ACX, IOCTL для службы кодирования) и AVRCP (громкость, кнопки через VHF). INF содержит идентификаторы JBL Live 780NC и Sony WH-1000XM2. |
 | `service/` | `ldacsvc` / служба `LdacSvc`: звук с конечной точки драйвера (или WASAPI loopback, WAV) → ресемплинг → LDAC + ABR или SBC → медиапакеты в драйвер (IOCTL) или в имитацию канала; читает `settings.json`, пишет статус для утилиты. |
 | `tools/hci/` | Разбор журналов Bluetooth: `btvs` → pcap, ETL → btsnoop, декодер L2CAP/AVDTP/медиа. |
 | `tools/ldacenc/` | WAV → LDAC-пакеты A2DP, симуляция радиоканала и ABR. |
@@ -115,7 +119,7 @@ powershell -ExecutionPolicy Bypass -File tools\package\make-package.ps1
 
 Скрипт собирает службу (с тестами), Release-драйвер и подписывает его тестовым сертификатом. Утилиту настроек он публикует одним самодостаточным exe. Результат — `build\package\LdacA2dp-<версия>\` и `.zip`: `install.cmd`, `uninstall.cmd`, `README.txt` для пользователя (`installer/`), драйвер, `ldacsvc.exe`, `LdacConfig.exe`.
 
-- **`install.cmd`** просит права администратора и проверяет Windows 11 22H2+. Для драйвера с тестовой подписью он требует включённый тестовый режим, но сам его не включает. Дальше доверяет тестовому сертификату пакета и ставит файлы в `%ProgramFiles%\LdacA2dp`. Драйвер ставится на поддерживаемые наушники, служба `LdacSvc` регистрируется с адресом наушников, которые взял драйвер. Ещё создаются ярлык в «Пуске» и запись в «Приложениях». Повторный запуск обновляет установку на месте.
+- **`install.cmd`** просит права администратора и проверяет Windows 11 22H2+. Для драйвера с тестовой подписью он требует включённый тестовый режим, но сам его не включает. Дальше доверяет тестовому сертификату пакета и ставит файлы в `%ProgramFiles%\LdacA2dp`. Драйвер ставится на поддерживаемые наушники, служба `LdacSvc` автоматически обнаруживает подключённые устройства этого драйвера. Ещё создаются ярлык в «Пуске» и запись в «Приложениях». Повторный запуск обновляет установку на месте.
 - **`uninstall.cmd`** (или «Параметры → Приложения») убирает службу, все пакеты драйвера (наушники возвращаются на драйверы Windows), сертификат, файлы, ярлык и запись. Настройки в `%ProgramData%\LdacA2dp` остаются, `-RemoveSettings` удаляет и их.
 
 Проверено на стенде: удаление ручной установки, установка, удаление через запись «Приложений», повторная установка и обновление поверх.
