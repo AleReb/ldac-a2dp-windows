@@ -2,13 +2,13 @@
 
 ## Automatic headset detection on Windows x64
 
-[Earlier test-signed installer (sony.1)](https://github.com/AleReb/ldac-a2dp-windows/releases/tag/v0.2.324.1927-sony.1) · [Instalación en español](docs/instalacion-windows.md) · [English installation guide](docs/windows-install.md)
+[Download the multi-headset installer (Windows x64, test-signed)](https://github.com/AleReb/ldac-a2dp-windows/releases/tag/v0.2.324.1927-multi.1) · [Instalación en español](docs/instalacion-windows.md) · [English installation guide](docs/windows-install.md)
 
 Connect a supported Bluetooth headset and the encoder starts a session using that headset’s saved codec and quality settings. If several supported headsets are connected, the service manages each separately. The settings panel follows newly connected headphones within a few seconds. Choose the playback output in Windows.
 
 **Hardware compatibility.** Sony WH-1000XM2 playback was verified at LDAC HQ, 96 kHz and 990 kbps. The upstream project tested JBL Live 780NC. Windows also associated soundcore P31i with this driver on the development PC. Other headsets need a matching Bluetooth hardware ID and support for the selected codec.
 
-**Installing this version.** Build the installer from this branch using the commands under [Building](#building). Running the new package’s `install.cmd` upgrades an existing installation and enables automatic detection. The linked `sony.1` download predates this feature.
+**Installing this version.** Download and extract **LdacA2dp-Windows-x64.zip**, then run `install.cmd` to install or upgrade in place.
 
 The original project and its development notes follow below.
 

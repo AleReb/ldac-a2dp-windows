@@ -2,7 +2,7 @@
 
 ## Varios auriculares
 
-La versión actual del repositorio abre una sesión por cada auricular conectado que utilice el controlador. Cada uno conserva su códec y calidad. El panel selecciona el que acabas de conectar y Windows controla por dónde se reproduce el audio. Para actualizar una instalación anterior, [compila el paquete actual](../README.md#building) y ejecuta su **install.cmd**. El ZIP de **sony.1** enlazado más abajo es anterior a la detección automática.
+El servicio abre una sesión por cada auricular conectado que utilice el controlador. Cada uno conserva su códec y calidad. El panel selecciona el que acabas de conectar y Windows controla por dónde se reproduce el audio. Para actualizar una instalación anterior, extrae el ZIP de la versión enlazada más abajo y ejecuta su **install.cmd**.
 
 Esta edición incluye un panel en inglés y los identificadores Bluetooth de los Sony WH-1000XM2 y JBL Live 780NC. En el equipo de desarrollo se verificó transmisión LDAC HQ a 990 kbps y reconexión con los Sony, un adaptador Realtek y Windows 11 Pro 26H2 x64. El proyecto original documenta sus pruebas con los JBL. La tasa alcanzada depende del enlace.
 
@@ -14,7 +14,7 @@ Esta edición incluye un panel en inglés y los identificadores Bluetooth de los
 
 ## Descargar e instalar
 
-1. Abre la [versión del fork](https://github.com/AleReb/ldac-a2dp-windows/releases/tag/v0.2.324.1927-sony.1). En **Assets**, descarga **LdacA2dp-Windows-x64.zip**. Los archivos **Source code** contienen el código para desarrolladores. Para verificar el ZIP, ejecuta `Get-FileHash .\LdacA2dp-Windows-x64.zip -Algorithm SHA256` desde su carpeta y compara el resultado con **SHA256SUMS.txt** de la misma versión.
+1. Abre la [versión del fork](https://github.com/AleReb/ldac-a2dp-windows/releases/tag/v0.2.324.1927-multi.1). En **Assets**, descarga **LdacA2dp-Windows-x64.zip**. Los archivos **Source code** contienen el código para desarrolladores. Para verificar el ZIP, ejecuta `Get-FileHash .\LdacA2dp-Windows-x64.zip -Algorithm SHA256` desde su carpeta y compara el resultado con **SHA256SUMS.txt** de la misma versión.
 2. En Terminal **como administrador**, ejecuta `bcdedit /set testsigning on` y reinicia. Si Windows indica que Secure Boot protege el valor, revisa los requisitos anteriores.
 3. Empareja y conecta los auriculares en **Configuración → Bluetooth y dispositivos**. En los Sony elige la prioridad de calidad de sonido si cambiaste antes ese ajuste. [Guía de Sony](https://helpguide.sony.net/mdr/wh1000xm2/v1/es/contents/TP0001513476.html)
 4. Usa **Extraer todo** sobre el ZIP. En la carpeta extraída, ejecuta **install.cmd**, acepta el aviso de administrador y espera el mensaje **Done**. El instalador importa el certificado público de prueba en los almacenes locales de raíces de confianza y editores de confianza, instala el controlador y registra el servicio **LdacSvc**.
