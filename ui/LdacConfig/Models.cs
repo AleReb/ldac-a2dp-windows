@@ -43,6 +43,8 @@ public sealed class DeviceSettings : Observable
     private bool _adaptive = true;
     private int _holdSeconds = 3;
 
+    public string ReconnectRequest { get; set; } = string.Empty;
+
     public DriverChoice Driver { get => _driver; set => Set(ref _driver, value); }
 
     public CodecType Codec

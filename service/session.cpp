@@ -308,7 +308,7 @@ SessionEnd RunSession(const SessionOptions &o, const std::atomic<bool> &stop, st
                 settingsStamp = stamp;
                 DeviceSettings fresh;
                 LoadSettings(address, fresh, note);
-                if (!SameLinkPrefs(fresh, settings)) {
+                if (fresh.reconnectRequest != settings.reconnectRequest || !SameLinkPrefs(fresh, settings)) {
                     printf("settings: %s, stream configuration changed\n", note.c_str());
                     sink->Disconnect();
                     end = SessionEnd::Reconfigure;

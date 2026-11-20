@@ -1,5 +1,13 @@
 # LDAC A2DP for Windows
 
+## Sony WH-1000XM2 fork · Windows x64
+
+[Download the test-signed installer](https://github.com/AleReb/ldac-a2dp-windows/releases/tag/v0.2.324.1927-sony.1) · [Instalación en español](docs/instalacion-windows.md) · [English installation guide](docs/windows-install.md)
+
+This fork adds hardware IDs for the Sony WH-1000XM2, an English settings panel, active-headset selection at startup and a working audio-session reconnect button. LDAC HQ at 990 kbps and reconnection were verified on one Windows 11 Pro 26H2 x64 PC with a Realtek Bluetooth adapter. Other PCs and radio conditions can produce different results. The installer requires test signing. See the guide before changing boot settings.
+
+The original project and its development notes follow below.
+
 An open-source replacement for the Windows Bluetooth audio source (`BthA2dp`) that streams **LDAC** (Sony's hi-res Bluetooth codec, up to 990 kbit/s, 96 kHz / 24-bit) to headphones, with SBC as the fallback.
 
 **English** · [Русский](#русский)

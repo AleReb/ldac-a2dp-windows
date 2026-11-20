@@ -21,6 +21,7 @@ extern "C" {
 // ---- settings / status (settings.cpp) -------------------------------------
 
 struct DeviceSettings {
+    std::string reconnectRequest;
     bool ldac = true;
     uint8_t freqMask = LDAC_FREQ_44100 | LDAC_FREQ_48000 | LDAC_FREQ_88200 | LDAC_FREQ_96000;
     uint8_t cmMask = LDAC_CM_STEREO;

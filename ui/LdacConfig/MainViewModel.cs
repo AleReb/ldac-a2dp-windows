@@ -76,27 +76,27 @@ public sealed class MainViewModel : Observable
     private LinkStatus? Status => _status is { } s && DateTime.UtcNow - s.Written < TimeSpan.FromSeconds(5) ? s : null;
     public bool HasStatus => Status is not null;
     public string ServiceState => _serviceState;
-    public string StatusStreaming => Status is { } s ? (s.Streaming ? "идёт" : "пауза (нет звука)") : "—";
+    public string StatusStreaming => Status is { } s ? (s.Streaming ? "Active" : "Paused (no audio)") : "—";
     public string StatusQuality => Status is { } s && s.Quality.Length > 0 ? s.Quality : "—";
     public string StatusVolume => Status is { } s
-        ? (s.Muted ? "выключен" : $"{s.VolumeDb:0.0} дБ") + (s.AbsoluteVolume ? ", в наушниках (AVRCP)" : ", в службе")
+        ? (s.Muted ? "Muted" : $"{s.VolumeDb:0.0} dB") + (s.AbsoluteVolume ? ", headphones (AVRCP)" : ", encoder service")
         : "—";
     public string StatusAvrcp => Status?.Avrcp switch
     {
         null => "—",
-        "absoluteVolume" => "подключён, абсолютная громкость",
-        "noAbsoluteVolume" => "подключён, без абсолютной громкости",
-        "connected" => "подключён",
-        "opening" => "подключается",
-        "closed" => "не подключён",
-        "none" => "нет устройства AVRCP",
+        "absoluteVolume" => "Connected with absolute volume",
+        "noAbsoluteVolume" => "Connected without absolute volume",
+        "connected" => "Connected",
+        "opening" => "Connecting",
+        "closed" => "Disconnected",
+        "none" => "No AVRCP device",
         var other => other,
     };
     public string StatusDropped => Status is { } s ? s.DroppedPackets.ToString(CultureInfo.CurrentCulture) : "—";
     public string StatusCodec => Status?.Codec ?? "—";
     public string StatusChannelMode => Status?.ChannelMode ?? "—";
     public string StatusSampleRate => Status is { } s ? FormatRate(s.SampleRate) : "—";
-    public string StatusBitDepth => Status is { } s ? $"{s.BitDepth} бит" : "—";
+    public string StatusBitDepth => Status is { } s ? $"{s.BitDepth}-bit" : "—";
     public string StatusBitrate => Status is { } s ? $"{s.BitrateKbps} kbps" : "—";
 
     private static string FormatRate(int hz) =>
@@ -137,11 +137,14 @@ public sealed class MainViewModel : Observable
                 dev.Settings.PropertyChanged += OnSettingsChanged;
                 Devices.Add(dev);
             }
-            Selected = Devices.FirstOrDefault(d => d.Address == keep) ?? Devices.FirstOrDefault();
+            Selected = Devices.FirstOrDefault(d => d.Address == keep) ?? Devices.FirstOrDefault(d =>
+                SettingsStore.ReadStatus(d.AddressText) is { } status &&
+                DateTime.UtcNow - status.Written < TimeSpan.FromSeconds(5))
+                ?? Devices.FirstOrDefault(d => d.Connected) ?? Devices.FirstOrDefault();
         }
         catch (Exception ex)
         {
-            Message = "Не удалось получить список устройств Bluetooth: " + ex.Message;
+            Message = "Could not list Bluetooth devices: " + ex.Message;
         }
         finally
         {
@@ -154,11 +157,11 @@ public sealed class MainViewModel : Observable
         try
         {
             SettingsStore.Save();
-            Message = $"Настройки сохранены: {SettingsPath}";
+            Message = $"Settings saved to {SettingsPath}";
         }
         catch (Exception ex)
         {
-            Message = "Не удалось сохранить настройки: " + ex.Message;
+            Message = "Could not save settings: " + ex.Message;
         }
     }
 
@@ -174,9 +177,22 @@ public sealed class MainViewModel : Observable
     {
         if (_selected is null)
             return;
-        OnSettingsChanged(null, new PropertyChangedEventArgs(null));
-        Message = "Настройки сохранены. Служба применяет их в течение секунды: кодек, частоту и каналы — " +
-                  "заново согласуя поток с наушниками, качество — без разрыва.";
+        if (!HasStatus)
+        {
+            Message = "No active LDAC A2DP session for " + _selected.Name +
+                      ". Connect these headphones in Windows Bluetooth settings, then refresh the list.";
+            return;
+        }
+        _selected.Settings.ReconnectRequest = Guid.NewGuid().ToString("N");
+        try
+        {
+            SettingsStore.Save();
+            Message = "Audio reconnection requested for " + _selected.Name + ". Check Live status below.";
+        }
+        catch (Exception ex)
+        {
+            Message = "Could not request reconnection: " + ex.Message;
+        }
     }
 }
 

@@ -42,28 +42,28 @@ public static class EncoderService
         public uint Type, State, ControlsAccepted, Win32ExitCode, SpecificExitCode, CheckPoint, WaitHint;
     }
 
-    /// <summary>"работает", "остановлена", "не установлена", ...</summary>
+    /// <summary>"Running", "Stopped", "Not installed", ...</summary>
     public static string State()
     {
         IntPtr scm = OpenSCManagerW(null, null, 0x0001 /* CONNECT */);
         if (scm == IntPtr.Zero)
-            return "неизвестно";
+            return "Unknown";
         try
         {
             IntPtr svc = OpenServiceW(scm, "LdacSvc", 0x0004 /* QUERY_STATUS */);
             if (svc == IntPtr.Zero)
-                return "не установлена";
+                return "Not installed";
             try
             {
                 if (!QueryServiceStatus(svc, out var st))
-                    return "неизвестно";
+                    return "Unknown";
                 return st.State switch
                 {
-                    1 => "остановлена",
-                    2 => "запускается",
-                    3 => "останавливается",
-                    4 => "работает",
-                    _ => "приостановлена",
+                    1 => "Stopped",
+                    2 => "Starting",
+                    3 => "Stopping",
+                    4 => "Running",
+                    _ => "Paused",
                 };
             }
             finally { CloseServiceHandle(svc); }

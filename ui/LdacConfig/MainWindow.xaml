@@ -23,13 +23,13 @@
                 <Button Style="{StaticResource NavLink}" Click="OnRefresh">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,14,0" VerticalAlignment="Center" />
-                        <TextBlock Text="Обновить список" FontSize="16" />
+                        <TextBlock Text="Refresh list" FontSize="16" />
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource NavLink}" Click="OnAbout">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE946;" FontSize="16" Margin="0,0,14,0" VerticalAlignment="Center" />
-                        <TextBlock Text="О приложении" FontSize="16" />
+                        <TextBlock Text="About" FontSize="16" />
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource NavLink}" Click="OnFaq">
@@ -41,13 +41,13 @@
             </StackPanel>
 
             <StackPanel DockPanel.Dock="Top">
-                <TextBlock Text="Стереозвуковые устройства Bluetooth (A2DP)" FontSize="16" FontWeight="SemiBold"
+                <TextBlock Text="Bluetooth stereo audio devices (A2DP)" FontSize="16" FontWeight="SemiBold"
                            Margin="14,24,14,12" TextWrapping="Wrap" />
-                <TextBlock Text="Поиск сопряжённых устройств…" Margin="20,8" Foreground="{StaticResource SecondaryText}"
+                <TextBlock Text="Searching for paired devices…" Margin="20,8" Foreground="{StaticResource SecondaryText}"
                            Visibility="{Binding Loading, Converter={StaticResource BoolToVis}}" />
                 <TextBlock Margin="20,8" TextWrapping="Wrap" Foreground="{StaticResource SecondaryText}"
                            Visibility="{Binding NoDevices, Converter={StaticResource BoolToVis}}"
-                           Text="Нет сопряжённых аудиоустройств Bluetooth. Выполните сопряжение в «Параметры → Bluetooth и устройства» и нажмите «Обновить список»." />
+                           Text="Pair your headphones in Settings → Bluetooth &amp; devices, then select Refresh list." />
             </StackPanel>
 
             <ListBox ItemsSource="{Binding Devices}" SelectedItem="{Binding Selected}"
@@ -83,7 +83,7 @@
                     <DataTemplate>
                         <StackPanel Margin="4,6">
                             <TextBlock Text="{Binding Name}" FontSize="16" />
-                            <TextBlock Text="подключено" FontSize="12" Foreground="{StaticResource SecondaryText}"
+                            <TextBlock Text="Connected" FontSize="12" Foreground="{StaticResource SecondaryText}"
                                        Visibility="{Binding Connected, Converter={StaticResource BoolToVis}}" />
                         </StackPanel>
                     </DataTemplate>
@@ -101,24 +101,24 @@
                             DataContext="{Binding Selected}"
                             IsEnabled="{Binding DataContext.HasDevice, RelativeSource={RelativeSource AncestorType=Window}}">
 
-                    <TextBlock Text="Настройки устройства" FontSize="28" Margin="0,8,0,8" />
-                    <TextBlock Text="{Binding AddressText, StringFormat='Адрес: {0}'}" Foreground="{StaticResource SecondaryText}" />
+                    <TextBlock Text="Device settings" FontSize="28" Margin="0,8,0,8" />
+                    <TextBlock Text="{Binding AddressText, StringFormat='Address: {0}'}" Foreground="{StaticResource SecondaryText}" />
 
-                    <TextBlock Style="{StaticResource FieldLabel}" Text="Драйвер устройства" />
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Device driver" />
                     <StackPanel Orientation="Horizontal">
                         <ComboBox Width="280" SelectedValuePath="Tag" SelectedValue="{Binding Settings.Driver}">
                             <ComboBoxItem Content="LDAC A2DP Driver" Tag="{x:Static local:DriverChoice.Ldac}" />
-                            <ComboBoxItem Content="Штатный драйвер Microsoft" Tag="{x:Static local:DriverChoice.Microsoft}" />
+                            <ComboBoxItem Content="Microsoft Bluetooth audio driver" Tag="{x:Static local:DriverChoice.Microsoft}" />
                         </ComboBox>
-                        <Button Content="Установить" Margin="40,0,0,0" IsEnabled="False"
+                        <Button Content="Install" Margin="40,0,0,0" IsEnabled="False"
                                 ToolTipService.ShowOnDisabled="True"
-                                ToolTip="Драйвер ставится и снимается вместе с пакетом LDAC A2DP: install.cmd и «Параметры → Приложения → LDAC A2DP → Удалить» (наушники вернутся на драйвер Microsoft)." />
+                                ToolTip="Run install.cmd to install the driver. To restore the Microsoft driver, open Settings → Apps, select LDAC A2DP and choose Uninstall." />
                     </StackPanel>
 
-                    <TextBlock Style="{StaticResource SectionHeader}" Text="Настройки КОДЕКА" />
+                    <TextBlock Style="{StaticResource SectionHeader}" Text="Codec settings" />
                     <StackPanel Orientation="Horizontal">
                         <StackPanel>
-                            <TextBlock Text="Тип КОДЕКА" FontSize="14" Margin="0,0,0,6" />
+                            <TextBlock Text="Codec" FontSize="14" Margin="0,0,0,6" />
                             <ComboBox Width="200" SelectedValuePath="Tag" SelectedValue="{Binding Settings.Codec}">
                                 <ComboBoxItem Content="LDAC" Tag="{x:Static local:CodecType.LDAC}" />
                                 <ComboBoxItem Content="SBC" Tag="{x:Static local:CodecType.SBC}" />
@@ -127,23 +127,23 @@
                         <TextBlock Style="{StaticResource InfoIcon}" VerticalAlignment="Top" Margin="10,2,0,0">
                             <TextBlock.ToolTip>
                                 <TextBlock MaxWidth="360" TextWrapping="Wrap"
-                                           Text="LDAC — кодек Sony (до 990 кбит/с, до 96 кГц / 24 бит). SBC — обязательный кодек A2DP, используется как запасной, если наушники отклонят LDAC." />
+                                           Text="LDAC supports up to 990 kbps and 96 kHz at 24 bits. SBC is the standard A2DP fallback when the headphones decline LDAC." />
                             </TextBlock.ToolTip>
                         </TextBlock>
                         <Button Margin="40,0,0,0" Width="440" VerticalAlignment="Stretch" Padding="12,8" HorizontalContentAlignment="Left"
                                 Click="OnPreset">
-                            <TextBlock TextWrapping="Wrap" Text="Загрузите для КОДЕКА наиболее часто используемые настройки" />
+                            <TextBlock TextWrapping="Wrap" Text="Load defaults for this codec" />
                         </Button>
                     </StackPanel>
 
                     <TextBlock Style="{StaticResource FieldLabel}" Margin="0,28,0,6"
-                               Text="Разрешить ОС/приложению выбирать режим канала между" />
+                               Text="Allowed channel modes" />
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Style="{StaticResource OptionCheck}" Content="Моно" IsChecked="{Binding Settings.AllowMono}" />
-                        <CheckBox Style="{StaticResource OptionCheck}" Content="Стерео" IsChecked="{Binding Settings.AllowStereo}" />
+                        <CheckBox Style="{StaticResource OptionCheck}" Content="Mono" IsChecked="{Binding Settings.AllowMono}" />
+                        <CheckBox Style="{StaticResource OptionCheck}" Content="Stereo" IsChecked="{Binding Settings.AllowStereo}" />
                     </StackPanel>
 
-                    <TextBlock Style="{StaticResource FieldLabel}" Text="Разрешить ОС/приложению выбирать частоту дискретизации между" />
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Allowed sample rates" />
                     <StackPanel Orientation="Horizontal">
                         <CheckBox Style="{StaticResource OptionCheck}" Content="44.1 kHz" IsChecked="{Binding Settings.Rate44}" />
                         <CheckBox Style="{StaticResource OptionCheck}" Content="48 kHz" IsChecked="{Binding Settings.Rate48}" />
@@ -153,62 +153,64 @@
                                   Visibility="{Binding Settings.IsLdac, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
 
-                    <TextBlock Style="{StaticResource FieldLabel}" Text="Разрешить ОС/приложению выбирать битовое разрешение между" />
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Allowed bit depths" />
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Style="{StaticResource OptionCheck}" Content="16 бит" IsChecked="{Binding Settings.Bits16}" />
-                        <CheckBox Style="{StaticResource OptionCheck}" Content="24 бит" IsChecked="{Binding Settings.Bits24}" />
+                        <CheckBox Style="{StaticResource OptionCheck}" Content="16-bit" IsChecked="{Binding Settings.Bits16}" />
+                        <CheckBox Style="{StaticResource OptionCheck}" Content="24-bit" IsChecked="{Binding Settings.Bits24}" />
                     </StackPanel>
 
-                    <TextBlock Style="{StaticResource FieldLabel}" Text="Стерео-режим" />
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Stereo mode" />
                     <ComboBox Width="280" HorizontalAlignment="Left"
                               ItemsSource="{Binding Settings.ChannelModes}" SelectedItem="{Binding Settings.ChannelMode}" />
 
-                    <Button Content="(Пере)подключить устройство" HorizontalAlignment="Right" Margin="0,16,0,0"
+                    <Button Content="Reconnect device" HorizontalAlignment="Right" Margin="0,16,0,0"
                             Padding="14,8" Click="OnReconnect" />
+                    <TextBlock Margin="0,20,0,0" TextWrapping="Wrap" Foreground="{StaticResource SecondaryText}"
+                               Text="{Binding DataContext.Message, RelativeSource={RelativeSource AncestorType=Window}}" />
 
                     <StackPanel Visibility="{Binding Settings.IsLdac, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Style="{StaticResource FieldLabel}" Text="Качество кодирования" />
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Encoding quality" />
                         <StackPanel Orientation="Horizontal">
-                            <RadioButton GroupName="q" Content="MQ (низкое)" MinWidth="150"
+                            <RadioButton GroupName="q" Content="MQ (low)" MinWidth="150"
                                          IsChecked="{Binding Settings.Quality, Converter={StaticResource EnumEquals}, ConverterParameter=MQ}" />
-                            <RadioButton GroupName="q" Content="SQ (среднее)" MinWidth="150"
+                            <RadioButton GroupName="q" Content="SQ (medium)" MinWidth="150"
                                          IsChecked="{Binding Settings.Quality, Converter={StaticResource EnumEquals}, ConverterParameter=SQ}" />
-                            <RadioButton GroupName="q" Content="HQ (высокое)" MinWidth="140"
+                            <RadioButton GroupName="q" Content="HQ (high)" MinWidth="140"
                                          IsChecked="{Binding Settings.Quality, Converter={StaticResource EnumEquals}, ConverterParameter=HQ}" />
                             <TextBlock Style="{StaticResource InfoIcon}">
                                 <TextBlock.ToolTip>
                                     <TextBlock MaxWidth="360" TextWrapping="Wrap"
-                                               Text="MQ — 330 кбит/с, SQ — 660 кбит/с, HQ — 990 кбит/с (для 44.1/88.2 кГц: 303/606/909). HQ требует хорошего радиоканала: при помехах будут заикания." />
+                                               Text="MQ uses 330 kbps, SQ 660 kbps and HQ 990 kbps (303, 606 and 909 kbps at 44.1 or 88.2 kHz). Interference can interrupt playback at HQ." />
                                 </TextBlock.ToolTip>
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <CheckBox Content="Автоматически снижать качество кодирования при плохом качестве радио"
+                            <CheckBox Content="Automatically reduce quality when the Bluetooth signal is weak"
                                       IsChecked="{Binding Settings.Adaptive}" />
                             <TextBlock Style="{StaticResource InfoIcon}">
                                 <TextBlock.ToolTip>
                                     <TextBlock MaxWidth="360" TextWrapping="Wrap"
-                                               Text="Адаптивный битрейт libldac (ABR): по глубине очереди передачи опускает качество HQ → SQ → 492 → 396 → MQ и поднимает обратно после ~6 с стабильного канала." />
+                                               Text="Adaptive bitrate uses the transmit queue to lower quality from HQ through SQ, 492 and 396 kbps to MQ. Quality increases again after about six seconds of a stable connection." />
                                 </TextBlock.ToolTip>
                             </TextBlock>
                         </StackPanel>
                         <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Foreground="{StaticResource SecondaryText}"
-                                   Text="Качество кодирования можно изменить в любое время, и оно задействуется при передаче следующего медиа-пакета." />
+                                   Text="Quality changes take effect with the next audio packet." />
                     </StackPanel>
 
-                    <TextBlock Style="{StaticResource FieldLabel}" Text="Держать передачу после звука" />
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Keep streaming after audio stops" />
                     <StackPanel Orientation="Horizontal">
                         <ComboBox Width="140" ItemsSource="{Binding Settings.HoldChoices}" SelectedItem="{Binding Settings.HoldSeconds}"
-                                  ItemStringFormat="{}{0} с" />
+                                  ItemStringFormat="{}{0} s" />
                         <TextBlock Style="{StaticResource InfoIcon}">
                             <TextBlock.ToolTip>
                                 <TextBlock MaxWidth="380" TextWrapping="Wrap"
-                                           Text="После паузы наушникам нужно около секунды, чтобы снова принять поток, и начало звука теряется. Пока плеер открыт, поток держится сам; для коротких звуков (уведомления) передача остаётся включённой столько секунд после звука. Больше — меньше обрезанных звуков, но дольше в эфире идёт тишина." />
+                                           Text="Headphones can take about a second to resume after a pause. Keeping the stream open preserves the start of short sounds such as notifications. Longer delays transmit silence for longer." />
                             </TextBlock.ToolTip>
                         </TextBlock>
                     </StackPanel>
 
-                    <TextBlock Style="{StaticResource SectionHeader}" Text="Текущее состояние" Margin="0,32,0,12" />
+                    <TextBlock Style="{StaticResource SectionHeader}" Text="Live status" Margin="0,32,0,12" />
                     <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="240" />
@@ -218,53 +220,52 @@
                             <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
                             <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="Тип КОДЕКА" Margin="0,3" />
+                        <TextBlock Grid.Row="0" Text="Active codec" Margin="0,3" />
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding StatusCodec}" Margin="0,3" />
-                        <TextBlock Grid.Row="1" Text="Режим канала" Margin="0,3" />
+                        <TextBlock Grid.Row="1" Text="Channel mode" Margin="0,3" />
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding StatusChannelMode}" Margin="0,3" />
-                        <TextBlock Grid.Row="2" Text="Частота дискретизации" Margin="0,3" />
+                        <TextBlock Grid.Row="2" Text="Sample rate" Margin="0,3" />
                         <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding StatusSampleRate}" Margin="0,3" />
-                        <TextBlock Grid.Row="3" Text="Битовое разрешение" Margin="0,3" />
+                        <TextBlock Grid.Row="3" Text="Bit depth" Margin="0,3" />
                         <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding StatusBitDepth}" Margin="0,3" />
-                        <TextBlock Grid.Row="4" Text="Скорость потока" Margin="0,3" />
+                        <TextBlock Grid.Row="4" Text="Bitrate" Margin="0,3" />
                         <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding StatusBitrate}" Margin="0,3" />
-                        <TextBlock Grid.Row="5" Text="Передача" Margin="0,3" />
+                        <TextBlock Grid.Row="5" Text="Streaming" Margin="0,3" />
                         <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding StatusStreaming}" Margin="0,3" />
-                        <TextBlock Grid.Row="6" Text="Текущее качество" Margin="0,3" />
+                        <TextBlock Grid.Row="6" Text="Current quality" Margin="0,3" />
                         <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding StatusQuality}" Margin="0,3" />
-                        <TextBlock Grid.Row="7" Text="Громкость" Margin="0,3" />
+                        <TextBlock Grid.Row="7" Text="Volume" Margin="0,3" />
                         <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding StatusVolume}" Margin="0,3" />
-                        <TextBlock Grid.Row="8" Text="AVRCP (громкость, кнопки)" Margin="0,3" />
+                        <TextBlock Grid.Row="8" Text="AVRCP (volume and buttons)" Margin="0,3" />
                         <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding StatusAvrcp}" Margin="0,3" />
-                        <TextBlock Grid.Row="9" Text="Отброшено пакетов" Margin="0,3" />
+                        <TextBlock Grid.Row="9" Text="Dropped packets" Margin="0,3" />
                         <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding StatusDropped}" Margin="0,3" />
-                        <TextBlock Grid.Row="10" Text="Служба кодирования" Margin="0,3" />
+                        <TextBlock Grid.Row="10" Text="Encoder service" Margin="0,3" />
                         <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding ServiceState}" Margin="0,3" />
                         <TextBlock Grid.Row="11" Grid.ColumnSpan="2" Margin="0,8,0,0" TextWrapping="Wrap"
                                    Foreground="{StaticResource SecondaryText}"
-                                   Text="Нет данных: наушники не подключены, их обслуживает другой драйвер, или служба кодирования не запущена."
+                                   Text="Live status is unavailable. Check that the headphones are connected, use this driver and that the encoder service is running."
                                    Visibility="{Binding HasStatus, Converter={StaticResource InverseBoolToVis}}" />
                     </Grid>
 
-                    <TextBlock Margin="0,20,0,0" TextWrapping="Wrap" Foreground="{StaticResource SecondaryText}"
-                               Text="{Binding DataContext.Message, RelativeSource={RelativeSource AncestorType=Window}}" />
+
                 </StackPanel>
             </ScrollViewer>
 
             <!-- About -->
             <StackPanel Margin="20,24" MaxWidth="720" HorizontalAlignment="Left"
                         Visibility="{Binding ShowAbout, Converter={StaticResource BoolToVis}}">
-                <TextBlock Text="О приложении" FontSize="28" Margin="0,0,0,16" />
+                <TextBlock Text="About" FontSize="28" Margin="0,0,0,16" />
                 <TextBlock TextWrapping="Wrap" FontSize="14" LineHeight="22">
-                    LDAC A2DP Driver — собственный A2DP-источник для Windows: AVDTP-сигналинг,
-                    кодирование libldac (AOSP, Apache 2.0) и запасной SBC.
+                    LDAC A2DP Driver sends Bluetooth audio from Windows using AVDTP signaling,
+                    the libldac encoder (AOSP, Apache 2.0) and SBC fallback.
                     <LineBreak /><LineBreak />
-                    Утилита хранит настройки каждого устройства в файле:
+                    Settings for each device are stored here:
                 </TextBlock>
                 <TextBox IsReadOnly="True" Text="{Binding SettingsPath, Mode=OneWay}" Margin="0,8,0,0" />
                 <TextBlock TextWrapping="Wrap" FontSize="14" Margin="0,16,0,0" Foreground="{StaticResource SecondaryText}">
-                    Состав: драйвер LdacA2dp (A2DP, звуковое устройство «Наушники», AVRCP — абсолютная громкость
-                    и кнопки наушников), служба кодирования LdacSvc и эта утилита. Журнал службы:
+                    The LdacA2dp driver provides the headphones output, volume and media controls.
+                    LdacSvc encodes the audio. Its log is available here:
                     %ProgramData%\LdacA2dp\ldacsvc.log.
                 </TextBlock>
             </StackPanel>
@@ -274,21 +275,21 @@
                           Visibility="{Binding ShowFaq, Converter={StaticResource BoolToVis}}">
                 <StackPanel Margin="20,24" MaxWidth="720" HorizontalAlignment="Left">
                     <TextBlock Text="FAQ" FontSize="28" Margin="0,0,0,16" />
-                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Почему 96 кГц не выбирается?" />
+                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Why is 96 kHz unavailable?" />
                     <TextBlock TextWrapping="Wrap" Margin="0,4,0,16" Foreground="{StaticResource SecondaryText}"
-                               Text="Частоту выбирают обе стороны: если наушники не объявляют 96 кГц в своих возможностях LDAC, будет выбрана максимальная общая частота." />
-                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Звук заикается на HQ" />
+                               Text="Windows and the headphones negotiate the highest sample rate both allow. The headphones must advertise 96 kHz for LDAC." />
+                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Why does HQ stutter?" />
                     <TextBlock TextWrapping="Wrap" Margin="0,4,0,16" Foreground="{StaticResource SecondaryText}"
-                               Text="990 кбит/с требуют чистого радиоканала. Включите автоматическое снижение качества или выберите SQ. Wi-Fi 2.4 ГГц рядом с адаптером тоже мешает." />
-                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Сломается ли гарнитура для звонков?" />
+                               Text="990 kbps needs a reliable Bluetooth connection. Enable adaptive bitrate or select SQ. Nearby 2.4 GHz Wi-Fi can also cause interference." />
+                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Can I still use the headset for calls?" />
                     <TextBlock TextWrapping="Wrap" Margin="0,4,0,16" Foreground="{StaticResource SecondaryText}"
-                               Text="Нет: звонки идут через профиль HFP со своим драйвером (BthHFP). Заменяются A2DP и AVRCP." />
-                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Почему у коротких звуков пропадает начало?" />
+                               Text="Yes. Calls use the separate HFP driver. This package handles A2DP and AVRCP." />
+                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Why is the start of a notification cut off?" />
                     <TextBlock TextWrapping="Wrap" Margin="0,4,0,16" Foreground="{StaticResource SecondaryText}"
-                               Text="После паузы наушникам нужно около секунды, чтобы снова принимать поток. Увеличьте «Держать передачу после звука» — тогда серия уведомлений пройдёт без потерь." />
-                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="Что делает «Загрузите наиболее часто используемые настройки»?" />
+                               Text="The headphones can take about a second to resume. Increase the time under Keep streaming after audio stops." />
+                    <TextBlock FontWeight="SemiBold" FontSize="16" Text="What does Load defaults for this codec do?" />
                     <TextBlock TextWrapping="Wrap" Margin="0,4,0,16" Foreground="{StaticResource SecondaryText}"
-                               Text="Для LDAC: стерео, все частоты 44.1–96 кГц, 16 и 24 бит, качество SQ, адаптивный битрейт включён. Для SBC: стерео, 44.1/48 кГц, Joint Stereo." />
+                               Text="LDAC defaults to stereo, 44.1–96 kHz, 16 or 24 bits, SQ and adaptive bitrate. SBC defaults to stereo, 44.1 or 48 kHz and Joint Stereo." />
                 </StackPanel>
             </ScrollViewer>
         </Grid>

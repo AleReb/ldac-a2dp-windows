@@ -211,6 +211,7 @@ bool ParseSettings(std::string text, const std::string &address, DeviceSettings 
     out.bits24 = Flag(*dev, "bits24", true);
     std::string q = Text(*dev, "quality", "SQ");
     out.eqmid = q == "HQ" ? 0 : q == "MQ" ? 2 : 1;
+    out.reconnectRequest = Text(*dev, "reconnectRequest", "");
     out.adaptive = Flag(*dev, "adaptive", true);
     if (const Json *h = dev->Get("holdSeconds"); h && h->type == Json::Number && h->n >= 1 && h->n <= 600)
         out.holdSeconds = (int)h->n;

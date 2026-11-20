@@ -53,6 +53,7 @@ Copy-Item "$pub\LdacConfig.exe" $out
 Copy-Item "$root\installer\*" $out
 Set-Content -Path "$out\version.txt" -Value $version -Encoding ascii
 
+& "$PSScriptRoot\add-release-docs.ps1" -PackagePath $out -DotnetRoot (Split-Path (Get-Command dotnet.exe).Source)
 $zip = "$out.zip"
 if (Test-Path $zip) { Remove-Item $zip -Force }
 Compress-Archive -Path "$out\*" -DestinationPath $zip

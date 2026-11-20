@@ -40,7 +40,7 @@ $signer = (Get-AuthenticodeSignature (Join-Path $src 'driver\ldaca2dp.cat')).Sig
 $testSigned = (Test-Path $cert) -or ($signer -and $signer.Subject -eq 'CN=LdacA2dp Test')
 if ($testSigned) {
     $bcd = bcdedit /enum '{current}' | Out-String
-    if ($bcd -notmatch 'testsigning\s+(Yes|Да)') {
+    if ($bcd -notmatch 'testsigning\s+(Yes|Да|S[i\u00ed])') {
         throw @"
 This build of the driver is signed with a test certificate, and test signing is off.
 Windows will only load it with test signing on. If you accept that on this machine:
